@@ -222,22 +222,29 @@
       white-space: pre-wrap;
       word-break: break-all;
     }
-	esp-web-install-button {
-	  /* 这些是 ESP Web Tools v9+ 提供的官方变量，可以穿透 Shadow DOM */
+	/* 定义按钮在默认状态下的外观 */
+	esp-web-install-button::part(button) {
+	  /* 使用我们自己的主题变量来覆盖组件的默认样式 */
+	  background-color: var(--card-background);
+	  color: var(--text-color);
+	  border: 2px solid var(--primary-color);
+
+	  /* 保持与项目中其他按钮一致的外观 */
+	  border-radius: 8px;
+	  font-weight: bold;
+	  padding: 12px 24px;
 	  
-	  /* -- 默认状态 -- */
-	  --ewt-button-background-color: var(--card-background); /* 按钮背景色使用卡片背景 */
-	  --ewt-button-text-color: var(--text-color);           /* 按钮文字颜色使用主题文字颜色 */
-	  --ewt-button-border-color: var(--primary-color);     /* 按钮边框使用主题高亮色 */
-	  --ewt-button-border-width: 2px;
-	  --ewt-button-border-radius: 8px;
-	  --ewt-button-font-weight: bold;
-	  --ewt-button-padding: 12px 24px;
+	  /* 添加平滑的过渡效果 */
+	  transition: background-color 0.2s, color 0.2s;
 	  
-	  /* -- 鼠标悬浮 (hover) 状态 -- */
-	  --ewt-button-hover-background-color: var(--primary-color); /* 悬浮时背景变为主题高亮色 */
-	  --ewt-button-hover-text-color: var(--card-background);     /* 悬浮时文字变为卡片背景色 (实现反色) */
-	  --ewt-button-hover-border-color: var(--primary-color);
+	  /* 组件可能会自带一些默认样式，我们在这里可以强行覆盖掉 */
+	  box-shadow: none; 
+	}
+
+	/* 定义按钮在鼠标悬浮 (hover) 时的外观 */
+	esp-web-install-button::part(button):hover {
+	  background-color: var(--primary-color);
+	  color: var(--card-background); /* 颜色反转，实现高亮效果 */
 	}
   </style>
 </head>
