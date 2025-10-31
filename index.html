@@ -11,30 +11,65 @@
 
   <style>
     /* --- CSS 变量，用于主题切换 --- */
-    :root {
-      --theme-hue: 207; /* 默认蓝色 HUE 值 */
-      --primary-color: hsl(var(--theme-hue), 95%, 50%);
-      --background-color: #f0f4f8;
-      --text-color: #333;
-      --card-background: #ffffff;
-      --card-border-color: #e0e0e0;
-      --card-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
-    }
-    body.theme-dark {
-      --primary-color: hsl(var(--theme-hue), 80%, 60%);
-      --background-color: #121212;
-      --text-color: #e0e0e0;
-      --card-background: #1e1e1e;
-      --card-border-color: #333;
-      --card-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
-    }
-    body.theme-light {
-      --theme-hue: 207; /* 恢复为蓝色 HUE */
-      --background-color: #ffffff;
-    }
-    body.theme-pink {
-      --theme-hue: 330; /* 粉色 HUE */
-    }
+	:root {
+	  /* 预定义色调，方便管理 */
+	  --hue-blue: 207;
+	  --hue-pink: 330;
+	  
+	  /* 默认/备用值 (初始加载时使用蓝色主题) */
+	  --theme-hue: var(--hue-blue); 
+	  --primary-color: hsl(var(--theme-hue), 95%, 50%);
+	  --background-color: #f0f4f8;
+	  --text-color: #333;
+	  --card-background: #ffffff;
+	  --card-border-color: #e0e0e0;
+	  --card-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+	}
+
+	/* --- 主题定义 --- */
+
+	/* 深色主题 */
+	body.theme-dark {
+	  --primary-color: hsl(var(--theme-hue), 80%, 60%); /* 在深色背景下，颜色可以更亮一些 */
+	  --background-color: #121212;
+	  --text-color: #e0e0e0;
+	  --card-background: #1e1e1e;
+	  --card-border-color: #333;
+	  --card-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+	}
+
+	/* 蓝色主题 (基于浅色) - 显式定义 */
+	body.theme-blue {
+	  --theme-hue: var(--hue-blue);
+	  --primary-color: hsl(var(--theme-hue), 95%, 50%);
+	  --background-color: #f0f4f8; /* 默认的浅灰色背景 */
+	  --text-color: #333;
+	  --card-background: #ffffff;
+	  --card-border-color: #e0e0e0;
+	  --card-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+	}
+
+	/* 浅色主题 (纯白背景) */
+	body.theme-light {
+	  --theme-hue: var(--hue-blue); /* 浅色主题使用蓝色作为主色调 */
+	  --primary-color: hsl(var(--theme-hue), 95%, 50%);
+	  --background-color: #ffffff; /* 纯白色背景 */
+	  --text-color: #333;
+	  --card-background: #ffffff;
+	  --card-border-color: #e0e0e0;
+	  --card-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+	}
+
+	/* 粉色主题 (基于浅色) - 补充完整定义 */
+	body.theme-pink {
+	  --theme-hue: var(--hue-pink);
+	  --primary-color: hsl(var(--theme-hue), 95%, 50%);
+	  --background-color: #f0f4f8; /* 和蓝色主题使用相同的背景，以保持一致 */
+	  --text-color: #333;
+	  --card-background: #ffffff;
+	  --card-border-color: #e0e0e0;
+	  --card-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+	}
     /* --- 基础样式 --- */
     body {
       font-family: -apple-system, system-ui, BlinkMacSystemFont, "Segoe UI",
