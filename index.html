@@ -38,14 +38,19 @@
       --card-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
     }
     
-    /* 主题 2: 静谧黑 - 现代、专注 */
+    /* 主题 2: 静谧黑 - 简约黑白 */
     .theme-dark {
-      --primary-color: hsl(210, 90%, 65%); /* 提高亮度以在深色背景中突出 */
-      --background-color: hsl(220, 13%, 18%); /* 深邃的炭黑色，而非纯黑 */
-      --text-color: #ffffff;
-      --card-background: hsl(220, 13%, 24%);
-      --card-border-color: hsl(220, 13%, 30%);
-      --card-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+      /* 将主色调从蓝色改为近乎白色的高级灰，用于标题、链接和选中状态 */
+      --primary-color: hsl(0, 0%, 92%); 
+      /* 背景色可以维持或使用纯黑以达到最大对比度 */
+      --background-color: #121212;
+      /* 将主要文字颜色改为更亮的浅灰色，实现“白色字体”效果 */
+      --text-color: hsl(0, 0%, 88%);
+      /* 卡片背景使用深灰色，与主背景形成层次感 */
+      --card-background: hsl(0, 0%, 14%);
+      /* 卡片默认边框颜色调整为可见的灰色，实现“方框”效果 */
+      --card-border-color: hsl(0, 0%, 30%);
+      --card-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
     }
 
     /* 主题 3: 抹茶绿 - 自然、舒适 */
