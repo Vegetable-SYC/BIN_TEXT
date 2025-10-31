@@ -222,31 +222,38 @@
       white-space: pre-wrap;
       word-break: break-all;
     }
-	/* 定义按钮在默认状态下的外观 */
-	esp-web-install-button::part(button) {
-	  /* 使用我们自己的主题变量来覆盖组件的默认样式 */
-	  background-color: var(--card-background);
-	  color: var(--text-color);
-	  border: 2px solid var(--primary-color);
-
-	  /* 保持与项目中其他按钮一致的外观 */
-	  border-radius: 8px;
-	  font-weight: bold;
-	  padding: 12px 24px;
-	  
-	  /* 添加平滑的过渡效果 */
-	  transition: background-color 0.2s, color 0.2s;
-	  
-	  /* 组件可能会自带一些默认样式，我们在这里可以强行覆盖掉 */
-	  box-shadow: none; 
+	esp-web-install-button {
+	  display: none !important; /* 使用 !important 确保它绝不会被显示出来 */
 	}
 
-	/* 定义按钮在鼠标悬浮 (hover) 时的外观 */
-	esp-web-install-button::part(button):hover {
+	/* 2. 为我们自己的新按钮设计样式 */
+	.install-button {
+	  /* 基础样式 (让它看起来像一个主要的、被选中的操作按钮) */
 	  background-color: var(--primary-color);
-	  color: var(--card-background); /* 颜色反转，实现高亮效果 */
+	  color: var(--card-background);
+	  border: 2px solid var(--primary-color);
+	  padding: 12px 28px;
+	  border-radius: 8px;
+	  font-size: 1.1em; /* 让最终的按钮稍微大一点，更醒目 */
+	  font-weight: bold;
+	  cursor: pointer;
+	  transition: all 0.2s ease-in-out;
+	  
+	  /* 添加一点阴影，让它更有立体感 */
+	  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 	}
-  </style>
+
+	/* 3. 设计鼠标悬浮和点击效果 */
+	.install-button:hover {
+	  transform: translateY(-2px);
+	  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.15);
+	}
+
+	.install-button:active {
+	  transform: translateY(0);
+	  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+	}
+	</style>
 </head>
 <body class="theme-blue">
 
@@ -272,7 +279,11 @@
       <div id="version-buttons" class="version-buttons"></div>
     </div>
     <div id="install-button-container" class="install-button-container hidden">
-        <esp-web-install-button 
+    
+    <!-- [新增] 我们自己的、可以完全自定义样式的按钮 -->
+    <button id="custom-install-button" class="install-button">连接设备</button>
+		<!-- 原始按钮依然保留，但之后会被CSS隐藏。它负责所有的后台逻辑 -->
+		<esp-web-install-button 
 		  connect-text="连接设备"
 		  disconnect-text="断开连接"
 		  install-text="开始安装"
@@ -281,10 +292,11 @@
 		  error-text="出错了"
 		  logs-text="查看日志"
 		></esp-web-install-button>
-    </div>
+	</div>
     <div class="footer">
       Installer powered by <a href="https://esphome.github.io/esp-web-tools/" target="_blank">ESP Web Tools</a>.
     </div>
+	
   </div>
 
 <script>
@@ -458,10 +470,47 @@ function initializeThemes() {
     document.getElementById('btn-pink').addEventListener('click', () => setTheme('theme-pink'));
 }
 
+function initializeProxyButton() {
+    const customButton = document.getElementById('custom-install-button');
+    const realInstallButton = document.querySelector('esp-web-install-button');
+
+    if (customButton && realInstallButton) {
+        customButton.addEventListener('click', () => {
+            // 查找 Shadow DOM 内部的真实 <button> 元素
+            const buttonInsideShadowDom = realInstallButton.shadowRoot.querySelector('button');
+            if (buttonInsideShadowDom) {
+                // 程序化地点击它
+                buttonInsideShadowDom.click();
+            } else {
+                console.error("无法在 esp-web-install-button 组件内部找到按钮。");
+            }
+        });
+
+        // 监听真实按钮的状态变化，并更新我们自定义按钮的文本
+        // 这是一个高级功能，可以使我们的按钮文本也动态变化
+        const observer = new MutationObserver((mutations) => {
+            mutations.forEach((mutation) => {
+                if (mutation.type === 'childList' && mutation.addedNodes.length > 0) {
+                     const realButtonText = realInstallButton.shadowRoot.querySelector('button').textContent;
+                     // 同步文本
+                     customButton.textContent = realButtonText;
+                }
+            });
+        });
+        
+        // 监视真实按钮的slot变化
+        const slot = realInstallButton.shadowRoot.querySelector('slot');
+        if (slot) {
+             observer.observe(slot, { childList: true });
+        }
+    }
+}
+
 // --- 初始化 ---
 document.addEventListener('DOMContentLoaded', () => {
     initializeThemes();
     populateProjects();
+	initializeProxyButton();
 });
 
 </script>
