@@ -1,4 +1,32 @@
-const FIRMWARE_BASE_PATH = "/firmware"; // Adjusted path for Vite's static asset serving
+
+const FIRMWARE_BASE_PATH = "/firmware"; // Ensure this is correctly exported
+
+
+export interface Version {
+    id: string;
+    name: string;
+    manifest_path: string;
+}
+
+export interface Firmware {
+    id: string;
+    name: string;
+    image: string;
+    versions: Version[];
+}
+
+interface Device {
+    id: string;
+    name: string;
+    image: string;
+    firmwares: Firmware[];
+}
+
+interface AppConfig {
+    devices: Device[];
+}
+
+let appConfig: AppConfig | null = null;
 
 async function fetchJson<T>(url: string): Promise<T> {
     const response = await fetch(url);
@@ -8,21 +36,42 @@ async function fetchJson<T>(url: string): Promise<T> {
     return response.json();
 }
 
-export async function getAllProjects(): Promise<string[]> {
-    const projectsUrl = `${FIRMWARE_BASE_PATH}/ALL_Project.json`;
-    return fetchJson<string[]>(projectsUrl);
+export async function getAppConfig(): Promise<AppConfig> {
+    if (appConfig) {
+        return appConfig;
+    }
+    const configUrl = `${FIRMWARE_BASE_PATH}/config.json`;
+    appConfig = await fetchJson<AppConfig>(configUrl);
+    return appConfig;
 }
 
-export async function getProjectConfig(projectId: string): Promise<{ name: string; image: string; devices: string[] }> {
-    const projectConfigUrl = `${FIRMWARE_BASE_PATH}/${projectId}/Project.json`;
-    return fetchJson<{ name: string; image: string; devices: string[] }>(projectConfigUrl);
+export function getAllDevices(): Device[] {
+    if (!appConfig) {
+        throw new Error("App config not loaded. Call getAppConfig first.");
+    }
+    return appConfig.devices;
 }
 
-export async function getDeviceConfig(projectId: string, deviceId: string): Promise<{ name: string; image: string; versions: string[] }> {
-    const deviceConfigUrl = `${FIRMWARE_BASE_PATH}/${projectId}/${deviceId}/Device.json`;
-    return fetchJson<{ name: string; image: string; versions: string[] }>(deviceConfigUrl);
+export function getDeviceById(deviceId: string): Device | undefined {
+    if (!appConfig) {
+        throw new Error("App config not loaded. Call getAppConfig first.");
+    }
+    return appConfig.devices.find(d => d.id === deviceId);
 }
 
-export function getManifestPath(projectId: string, deviceId: string, versionName: string): string {
-    return `${FIRMWARE_BASE_PATH}/${projectId}/${deviceId}/${versionName}/Download.json`;
+export function getFirmwareById(deviceId: string, firmwareId: string): Firmware | undefined {
+    const device = getDeviceById(deviceId);
+    if (!device) return undefined;
+    return device.firmwares.find(f => f.id === firmwareId);
+}
+
+export function getVersionById(deviceId: string, firmwareId: string, versionId: string): Version | undefined {
+    const firmware = getFirmwareById(deviceId, firmwareId);
+    if (!firmware) return undefined;
+    return firmware.versions.find(v => v.id === versionId);
+}
+
+export function getManifestPath(deviceId: string, firmwareId: string, versionId: string): string | undefined {
+    const version = getVersionById(deviceId, firmwareId, versionId);
+    return version ? version.manifest_path : undefined;
 }

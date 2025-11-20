@@ -1,0 +1,5 @@
+{
+  "name": "FNK0103",
+  "image": "FNK0103.png",
+  "devices": ["ESP32-2432S028", "WS2812"]
+}

@@ -8,6 +8,9 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="/src/style.css">
+    <!-- Added from example to ensure consistent dependencies -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/xterm@4.19.0/css/xterm.css">
+    <link rel="icon" href="/favicon.ico" type="image/x-icon">
   </head>
   <body>
 
@@ -26,19 +29,46 @@
         <main class="wizard-main">
           <div class="wizard-container">
             <section id="project-selection" class="step-section">
-              <h2 class="step-title">选择一个项目</h2>
-              <div id="project-grid" class="selection-grid"></div>
+              <h2 class="step-title">选择一个设备</h2>
+              <p class="step-subtitle">请选择您希望刷写固件的设备。</p>
+              <div id="device-selection-area">
+                <button id="select-device-button-main" class="install-button" disabled>选择设备</button>
+                <div id="selected-device-display" class="selected-item-display" style="display: none;">
+                    <img id="selected-device-image" src="" alt="Selected Device">
+                    <span id="selected-device-name"></span>
+                </div>
+              </div>
             </section>
-            <section id="device-selection" class="step-section">
-              <h2 class="step-title">选择您的设备</h2>
-              <div id="device-grid-container"></div>
+            <section id="firmware-selection-section" class="step-section">
+              <h2 class="step-title">选择您的固件</h2>
+              <p class="step-subtitle">然后, 选择您的固件型号。</p>
+              <div class="dropdown-container">
+                <select id="firmware-select" disabled>
+                    <option value="">选择固件</option>
+                </select>
+              </div>
             </section>
-            <section id="version-selection" class="step-section">
+            <section id="version-selection-section" class="step-section">
               <h2 class="step-title">选择固件版本</h2>
-              <div id="version-buttons" class="version-buttons"></div>
+              <p class="step-subtitle">最后, 选择您想安装的固件版本。</p>
+              <div class="dropdown-container">
+                <select id="version-select" disabled>
+                    <option value="">选择版本</option>
+                </select>
+              </div>
             </section>
             <section id="install-section" class="step-section">
               <h2 class="step-title">安装</h2>
+              <div class="baud-rate-selector-container">
+                <label for="baud-rate-select">Baud Rate:</label>
+                <select id="baud-rate-select">
+                  <option value="9600">9600</option>
+                  <option value="115200">115200</option>
+                  <option value="230400">230400</option>
+                  <option value="460800">460800</option>
+                  <option value="921600" selected>921600</option>
+                </select>
+              </div>
               <div id="install-button-container">
                   <button id="custom-install-button" class="install-button">
                     连接设备
@@ -90,10 +120,9 @@
       </div>
     </div>
     
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js"></script>
+    <script src="/anime.min.js"></script>
+    <!-- Added from example to ensure consistent dependencies -->
+    <script src="https://cdn.jsdelivr.net/npm/crypto-js@4.1.1/crypto-js.js"></script>
     <script type="module" src="/src/main.ts"></script>
   </body>
 </html>
-
-
-

@@ -1,0 +1,111 @@
+{
+  "devices": [
+    {
+      "id": "FNK0102A",
+      "name": "FNK0102A",
+      "image": "firmware/FNK0102A/FNK0102A.png",
+      "firmwares": [
+        {
+          "id": "Xiaozhi-1.4inch",
+          "name": "Xiaozhi-1.4inch",
+          "image": "firmware/FNK0102A/Xiaozhi-1.4inch/Device.png",
+          "versions": [
+            {
+              "id": "v1.0",
+              "name": "v1.0",
+              "manifest_path": "firmware/FNK0102A/Xiaozhi-1.4inch/v1.0/Download.json"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "FNK0102H",
+      "name": "FNK0102H",
+      "image": "firmware/FNK0102H/FNK0102H.png",
+      "firmwares": [
+        {
+          "id": "Xiaozhi-3.5inch",
+          "name": "Xiaozhi-3.5inch",
+          "image": "firmware/FNK0102H/Xiaozhi-3.5inch/Device.png",
+          "versions": [
+            {
+              "id": "v1.0",
+              "name": "v1.0",
+              "manifest_path": "firmware/FNK0102H/Xiaozhi-3.5inch/v1.0/Download.json"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "FNK0103",
+      "name": "FNK0103",
+      "image": "firmware/FNK0103/FNK0103.png",
+      "firmwares": [
+        {
+          "id": "WS2812",
+          "name": "WS2812",
+          "image": "firmware/FNK0103/WS2812/Device.png",
+          "versions": [
+            {
+              "id": "v1.0",
+              "name": "v1.0",
+              "manifest_path": "firmware/FNK0103/WS2812/v1.0/Download.json"
+            }
+          ]
+        },
+		{
+          "id": "ESP32-2432S028",
+          "name": "ESP32-2432S028",
+          "image": "firmware/FNK0103/ESP32-2432S028/Device.png",
+          "versions": [
+            {
+              "id": "v1.0",
+              "name": "v1.0",
+              "manifest_path": "firmware/FNK0103/ESP32-2432S028/v1.0/Download.json"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "WLED",
+      "name": "WLED",
+      "image": "firmware/WLED/WLED.png",
+      "firmwares": [
+        {
+          "id": "ESP32_C3",
+          "name": "ESP32-C3",
+          "image": "firmware/WLED/ESP32_C3/Device.png",
+          "versions": [
+            {
+              "id": "0.16.0",
+              "name": "0.16.0",
+              "manifest_path": "firmware/WLED/ESP32_C3/0.16.0/Download.json"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "NerdMiner_V2",
+      "name": "NerdMiner_V2",
+      "image": "firmware/NerdMiner_V2/NerdMiner_V2.png",
+      "firmwares": [
+        {
+          "id": "ESP32_C3",
+          "name": "ESP32-C3",
+          "image": "firmware/NerdMiner_V2/ESP32_C3/Device.png",
+          "versions": [
+            {
+              "id": "0.15.0",
+              "name": "0.15.0",
+              "manifest_path": "firmware/NerdMiner_V2/ESP32_C3/0.15.0/Download.json"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

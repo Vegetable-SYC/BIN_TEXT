@@ -1,43 +1,49 @@
 // ui.ts for Custom Design v4 - Final
-import { getProjectConfig, getDeviceConfig, getManifestPath, getAllProjects } from './api';
 import { term, serialMonitorTerminal, startSerialMonitor, stopSerialMonitor } from './esptool-wrapper';
+import { getAllDevices, type Firmware, type Version } from './api'; // Import necessary types and functions
 
 // Tell TypeScript that anime exists on the global scope (from CDN)
 declare const anime: any;
 
-const projectGrid = document.getElementById('project-grid');
-const deviceGridContainer = document.getElementById('device-grid-container');
-const modalDeviceGrid = document.getElementById('modal-device-grid');
-const versionButtons = document.getElementById('version-buttons');
-
-const projectSelectionSection = document.getElementById('project-selection');
-const deviceSelectionSection = document.getElementById('device-selection');
-const versionSelectionSection = document.getElementById('version-selection');
+// Main page elements
+const firmwareSelectionSection = document.getElementById('firmware-selection-section');
+const versionSelectionSection = document.getElementById('version-selection-section');
 const installSection = document.getElementById('install-section');
 
-// Modal elements
+// Firmware selection elements (on main page)
+const firmwareSelect = document.getElementById('firmware-select') as HTMLSelectElement;
+const versionSelect = document.getElementById('version-select') as HTMLSelectElement;
+
+// Device selection elements (on main page)
+const selectDeviceButtonMain = document.getElementById('select-device-button-main');
+const selectedDeviceDisplay = document.getElementById('selected-device-display');
+const selectedDeviceImage = document.getElementById('selected-device-image') as HTMLImageElement;
+const selectedDeviceName = document.getElementById('selected-device-name');
+
+// Modal elements (for device selection)
 const deviceModal = document.getElementById('device-modal');
 const closeModalBtn = document.getElementById('close-modal-btn');
+const modalDeviceGrid = document.getElementById('modal-device-grid'); // This will now show the actual devices
 
 // Console Tab elements
 const consoleTabs = document.querySelectorAll('.console-tab');
 const tabPanes = document.querySelectorAll('.tab-pane');
 
 // --- Callbacks ---
-type ProjectSelectCallback = (projectId: string) => void;
-type DeviceSelectCallback = (projectId: string, deviceId: string) => void;
-type VersionSelectCallback = (manifestPath: string) => void;
+type DeviceSelectCallback = (deviceId: string) => void;
+type FirmwareSelectCallback = (firmwareId: string) => void;
+type VersionSelectCallback = (versionId: string) => void;
 
-let onProjectSelect: ProjectSelectCallback | null = null;
-let onDeviceSelect: DeviceSelectCallback | null = null;
-let onVersionSelect: VersionSelectCallback | null = null;
+let onDeviceSelectCallback: DeviceSelectCallback | null = null;
+let onFirmwareSelectCallback: FirmwareSelectCallback | null = null;
+let onVersionSelectCallback: VersionSelectCallback | null = null;
 
 export function setSelectionCallbacks(
-    p: ProjectSelectCallback, d: DeviceSelectCallback, v: VersionSelectCallback
+    d: DeviceSelectCallback, f: FirmwareSelectCallback, v: VersionSelectCallback
 ) {
-    onProjectSelect = p;
-    onDeviceSelect = d;
-    onVersionSelect = v;
+    onDeviceSelectCallback = d;
+    onFirmwareSelectCallback = f;
+    onVersionSelectCallback = v;
 }
 
 // --- UI Control ---
@@ -45,6 +51,13 @@ export function setSelectionCallbacks(
 function animateSection(element: HTMLElement | null, show: boolean) {
     if (!element) return;
     
+    // Ensure anime.js is loaded before attempting animations
+    if (typeof anime === 'undefined') {
+        element.style.opacity = show ? '1' : '0';
+        element.style.display = show ? 'block' : 'none';
+        return;
+    }
+
     const isVisible = element.style.display === 'block';
     if (show === isVisible) return;
 
@@ -70,12 +83,12 @@ function animateSection(element: HTMLElement | null, show: boolean) {
     }
 }
 
-function showModal(show: boolean) {
-    if (!deviceModal) return;
+function showModal(modalElement: HTMLElement | null, show: boolean) {
+    if (!modalElement) return;
     if (show) {
-        deviceModal.classList.add('is-visible');
+        modalElement.classList.add('is-visible');
     } else {
-        deviceModal.classList.remove('is-visible');
+        modalElement.classList.remove('is-visible');
     }
 }
 
@@ -97,121 +110,125 @@ function createCard(id: string, name: string, imageUrl: string): HTMLDivElement 
 
 // --- UI Population ---
 
-export async function populateProjectsUI() {
-    if (!projectGrid || !projectSelectionSection) return;
+// This function now populates the MODAL with devices
+export function populateDeviceSelectionModal() {
+    if (!modalDeviceGrid || !deviceModal) return;
+
+    modalDeviceGrid.innerHTML = '<p>正在加载设备...</p>';
+    showModal(deviceModal, true); // Show the modal immediately
+
+    const devices = getAllDevices(); // Get all devices from API
     
-    const title = projectSelectionSection.querySelector('.step-title');
-    if (title) title.innerHTML = `选择一个项目 <p class="step-subtitle">请选择您希望刷写固件的项目。</p>`;
-    
-    projectGrid.innerHTML = '<p>正在加载项目...</p>';
-    animateSection(projectSelectionSection, true);
-    
-    try {
-        const projectFolders = await getAllProjects();
-        projectGrid.innerHTML = '';
-
-        if (projectFolders.length === 0) {
-            projectGrid.innerHTML = '<p>没有找到任何项目。</p>';
-            return;
-        }
-
-        projectFolders.forEach(folder => {
-            getProjectConfig(folder).then(projData => {
-                const card = createCard(folder, projData.name, `/firmware/${folder}/${projData.image}`);
-                card.style.opacity = '0'; // For animation
-                card.addEventListener('click', () => {
-                    document.querySelectorAll('#project-grid .selection-card').forEach(c => c.classList.remove('selected'));
-                    card.classList.add('selected');
-                    animateSection(versionSelectionSection, false);
-                    animateSection(installSection, false);
-                    onProjectSelect?.(folder);
-                });
-                projectGrid.appendChild(card);
-            }).catch(innerError => {
-                console.warn(`Skipping project "${folder}" due to error:`, innerError);
-            });
-        });
-
-        // Staggered animation for cards
-        anime({
-            targets: '#project-grid .selection-card',
-            opacity: 1,
-            translateY: [10, 0],
-            delay: anime.stagger(100)
-        });
-
-    } catch (error: any) {
-        displayError('project-grid', error);
-    }
-}
-
-export async function populateDevicesUI(projectId: string, deviceFolders: string[]) {
-    if (!modalDeviceGrid || !deviceSelectionSection || !deviceGridContainer) return;
-
-    const title = deviceSelectionSection.querySelector('.step-title');
-    if (title) title.innerHTML = `选择您的设备 <p class="step-subtitle">然后, 选择您的硬件设备型号。</p>`;
-
-    const btnHtml = `<button id="select-device-button" class="install-button">选择设备</button>`;
-    deviceGridContainer.innerHTML = btnHtml;
-    const selectDeviceButton = document.getElementById('select-device-button');
-    selectDeviceButton?.addEventListener('click', () => showModal(true));
-    
-    animateSection(deviceSelectionSection, true);
-
-    if (!deviceFolders || deviceFolders.length === 0) {
-        modalDeviceGrid.innerHTML = '<p>该项目下没有可用的设备。</p>';
+    if (devices.length === 0) {
+        modalDeviceGrid.innerHTML = '<p>没有找到任何设备。</p>';
         return;
     }
-    
-    modalDeviceGrid.innerHTML = '';
-    for (const folder of deviceFolders) {
-        try {
-            const devData = await getDeviceConfig(projectId, folder);
-            const card = createCard(folder, devData.name, `/firmware/${projectId}/${folder}/${devData.image}`);
-            card.addEventListener('click', () => {
-                if (selectDeviceButton) {
-                    selectDeviceButton.textContent = devData.name;
-                    selectDeviceButton.classList.add('selected');
+
+    modalDeviceGrid.innerHTML = ''; // Clear loading text
+    devices.forEach(device => {
+        const card = createCard(device.id, device.name, device.image);
+        card.addEventListener('click', () => {
+            // Update the main page with selected device info
+            if (selectedDeviceDisplay && selectedDeviceImage && selectedDeviceName) {
+                selectedDeviceImage.src = device.image;
+                selectedDeviceImage.alt = device.name;
+                selectedDeviceName.textContent = device.name;
+                selectedDeviceDisplay.style.display = 'flex'; // Show the selected device info
+                if (selectDeviceButtonMain) {
+                    selectDeviceButtonMain.style.display = 'none'; // Hide the 'Select Device' button
                 }
-                showModal(false);
-                animateSection(installSection, false);
-                onDeviceSelect?.(projectId, folder);
-            });
-            modalDeviceGrid.appendChild(card);
-        } catch(error: any) {
-             displayError('modal-device-grid', error); 
-             return; 
-        }
-    }
+            }
+
+            showModal(deviceModal, false); // Hide the modal
+            animateSection(firmwareSelectionSection, true); // Show firmware selection
+            animateSection(versionSelectionSection, false); // Hide version selection
+            animateSection(installSection, false); // Hide install section
+            onDeviceSelectCallback?.(device.id); // Trigger callback
+        });
+        modalDeviceGrid.appendChild(card);
+    });
 }
 
-export function populateVersionsUI(projectId: string, deviceId: string, versionFolders: string[]) {
-    if (!versionButtons || !versionSelectionSection) return;
+// This function populates the firmware selection dropdown
+export function populateFirmwareUI(firmwares: Firmware[]) {
+    if (!firmwareSelect) return;
 
-    const title = versionSelectionSection.querySelector('.step-title');
-    if (title) title.innerHTML = `选择固件版本 <p class="step-subtitle">最后, 选择您想安装的固件版本。</p>`;
+    firmwareSelect.innerHTML = '<option value="">选择固件</option>'; // Clear existing options and add default
+    firmwareSelect.disabled = true; // Disable until options are loaded
 
-    versionButtons.innerHTML = '';
-    animateSection(versionSelectionSection, true);
-
-    if (!versionFolders || versionFolders.length === 0) {
-        versionButtons.innerHTML = `<p>该设备下没有可用的固件版本。</p>`;
+    if (firmwares.length === 0) {
+        const option = document.createElement('option');
+        option.value = '';
+        option.textContent = '该设备下没有可用的固件';
+        firmwareSelect.appendChild(option);
         return;
     }
 
-    for (const folder of versionFolders) {
-        const button = document.createElement('a');
-        button.className = 'version-button';
-        button.textContent = folder;
-        
-        button.addEventListener('click', () => {
-            document.querySelectorAll('#version-buttons .version-button').forEach(b => b.classList.remove('selected'));
-            button.classList.add('selected');
-            animateSection(installSection, true);
-            onVersionSelect?.(getManifestPath(projectId, deviceId, folder));
-        });
-        versionButtons.appendChild(button);
+    firmwares.forEach(firmware => {
+        const option = document.createElement('option');
+        option.value = firmware.id;
+        option.textContent = firmware.name;
+        firmwareSelect.appendChild(option);
+    });
+
+    firmwareSelect.disabled = false;
+    // Remove existing event listeners to prevent duplicates
+    // This is safer than { once: true } if populateFirmwareUI can be called multiple times for the same select element
+    const oldFirmwareSelect = firmwareSelect;
+    const newFirmwareSelect = oldFirmwareSelect.cloneNode(true) as HTMLSelectElement;
+    oldFirmwareSelect.parentNode?.replaceChild(newFirmwareSelect, oldFirmwareSelect);
+
+    newFirmwareSelect.addEventListener('change', (event) => {
+        const selectedFirmwareId = (event.target as HTMLSelectElement).value;
+        if (selectedFirmwareId) {
+            onFirmwareSelectCallback?.(selectedFirmwareId);
+            animateSection(versionSelectionSection, true); // Show version selection
+            animateSection(installSection, false); // Hide install section
+        } else {
+            // If "选择固件" is selected, hide subsequent sections
+            animateSection(versionSelectionSection, false);
+            animateSection(installSection, false);
+        }
+    });
+}
+
+
+export function populateVersionsUI(versions: Version[]) {
+    if (!versionSelect) return;
+
+    versionSelect.innerHTML = '<option value="">选择版本</option>'; // Clear existing options and add default
+    versionSelect.disabled = true; // Disable until options are loaded
+
+    if (versions.length === 0) {
+        const option = document.createElement('option');
+        option.value = '';
+        option.textContent = '该固件下没有可用的版本。';
+        versionSelect.appendChild(option);
+        return;
     }
+
+    versions.forEach(version => {
+        const option = document.createElement('option');
+        option.value = version.id;
+        option.textContent = version.name;
+        versionSelect.appendChild(option);
+    });
+
+    versionSelect.disabled = false;
+    // Remove existing event listeners to prevent duplicates
+    const oldVersionSelect = versionSelect;
+    const newVersionSelect = oldVersionSelect.cloneNode(true) as HTMLSelectElement;
+    oldVersionSelect.parentNode?.replaceChild(newVersionSelect, oldVersionSelect);
+
+    newVersionSelect.addEventListener('change', (event) => {
+        const selectedVersionId = (event.target as HTMLSelectElement).value;
+        if (selectedVersionId) {
+            onVersionSelectCallback?.(selectedVersionId);
+            animateSection(installSection, true); // Show install section
+        } else {
+            animateSection(installSection, false); // Hide install section
+        }
+    });
 }
 
 
@@ -259,10 +276,10 @@ export function setActiveTab(tabName: string | null) {
     });
 }
 
-closeModalBtn?.addEventListener('click', () => showModal(false));
+closeModalBtn?.addEventListener('click', () => showModal(deviceModal, false));
 deviceModal?.addEventListener('click', (e) => {
     if (e.target === deviceModal) {
-        showModal(false);
+        showModal(deviceModal, false);
     }
 });
 
@@ -274,3 +291,19 @@ themeSwitcher?.addEventListener('click', () => {
 
 // Set initial theme
 document.body.classList.add('dark-mode');
+
+// Event listener for the main 'Select Device' button
+selectDeviceButtonMain?.addEventListener('click', () => {
+    populateDeviceSelectionModal();
+    animateSection(firmwareSelectionSection, false); // Hide firmware selection
+    animateSection(versionSelectionSection, false); // Hide version selection
+    animateSection(installSection, false); // Hide install section
+});
+
+// Initial state: hide all sections except project selection
+animateSection(firmwareSelectionSection, false);
+animateSection(versionSelectionSection, false);
+animateSection(installSection, false);
+
+// Initial rendering of main screen. The main screen now just shows the button.
+// The actual population of the modal happens when the button is clicked.

@@ -113,10 +113,11 @@ body.dark-mode .wizard-column.card, body.dark-mode .console-column.card {
     padding: 0;
 }
 
+
 .step-section {
   padding: 2rem 2.5rem;
   border-bottom: 1px solid var(--border-light);
-  display: none;
+  text-align: center; /* 确保所有块级元素（如p, h2）文本居中 */
 }
 body.dark-mode .step-section {
   border-bottom-color: var(--border-dark);
@@ -137,6 +138,28 @@ body.dark-mode .step-section {
 body.dark-mode .step-subtitle {
     color: var(--text-secondary-dark);
 }
+
+/* 针对按钮和图片容器进行flex布局，使其自身居中 */
+#device-selection-area,
+#install-button-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center; /* 水平居中 */
+  justify-content: center; /* 垂直居中 */
+  gap: 1rem; /* 元素间距 */
+}
+
+.selected-item-display {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.baud-rate-selector-container {
+  justify-content: center; /* 居中 */
+}
+
 
 /* --- Console Column --- */
 .console-tabs {
@@ -247,7 +270,7 @@ body.dark-mode .selection-card:hover { border-color: var(--accent-dark); }
 body.dark-mode .selection-card.selected { border-color: var(--accent-dark); background-color: var(--accent-dark); color: var(--bg-dark); box-shadow: 0 0 0 4px rgba(96, 165, 250, 0.3); }
 .selection-card.selected span { color: #FFF !important; }
 body.dark-mode .selection-card.selected span { color: var(--bg-dark) !important; }
-.selection-card img { width: 96px; height: 96px; margin-bottom: 1rem; object-fit: contain; pointer-events: none; }
+.selection-card img { width: 128px; height: 128px; margin-bottom: 1rem; object-fit: contain; pointer-events: none; }
 .selection-card span { display: block; font-weight: 600; font-size: 1rem; color: var(--text-secondary-light); transition: color 0.2s var(--ease-out); }
 body.dark-mode .selection-card span { color: var(--text-secondary-dark); }
 .selection-card:hover span { color: var(--text-primary-light); }
@@ -261,10 +284,43 @@ body.dark-mode .version-button:hover { border-color: var(--accent-dark); color: 
 .version-button.selected { background-color: var(--accent-light); border-color: var(--accent-light); color: #FFF; }
 body.dark-mode .version-button.selected { background-color: var(--accent-dark); border-color: var(--accent-dark); color: var(--bg-dark); }
 
+.baud-rate-selector-container {
+  margin-bottom: 1.5rem;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  color: var(--text-secondary-light);
+}
+body.dark-mode .baud-rate-selector-container {
+  color: var(--text-secondary-dark);
+}
+#baud-rate-select {
+  background-color: var(--surface-light);
+  border: 1px solid var(--border-light);
+  color: var(--text-primary-light);
+  padding: 0.5rem 1rem;
+  border-radius: 6px;
+  font-size: 0.875rem;
+  font-weight: 500;
+}
+body.dark-mode #baud-rate-select {
+  background-color: var(--surface-dark);
+  border-color: var(--border-dark);
+  color: var(--text-primary-dark);
+}
+
 .install-button { background-color: var(--accent-light); color: #FFF; border: none; padding: 0.875rem 2.5rem; font-size: 1.125rem; font-weight: 600; border-radius: 8px; cursor: pointer; transition: all 0.2s var(--ease-out); width: 100%; }
 body.dark-mode .install-button { background-color: var(--accent-dark); color: var(--bg-dark); }
 .install-button:hover { background-color: var(--accent-hover-light); transform: translateY(-2px); box-shadow: 0 4px 15px rgba(59, 130, 246, 0.25); }
 body.dark-mode .install-button:hover { background-color: var(--accent-hover-dark); box-shadow: 0 4px 15px rgba(96, 165, 250, 0.15); }
+
+.selected-item-display img#selected-device-image {
+    max-width: 120px; /* 调整为更大的尺寸 */
+    max-height: 120px; /* 调整为更大的尺寸 */
+    object-fit: contain;
+    margin-bottom: 0.5rem;
+    border-radius: 8px; /* 添加圆角 */
+}
 
 /* --- Modal --- */
 .modal-overlay { position: fixed; inset: 0; background-color: rgba(0,0,0, 0.6); backdrop-filter: blur(5px); display: flex; justify-content: center; align-items: center; z-index: 1000; opacity: 0; pointer-events: none; transition: opacity 0.3s var(--ease-in-out); }
@@ -300,4 +356,45 @@ body.dark-mode .close-button { color: var(--text-secondary-dark); }
     .console-column.card {
         height: 70vh; /* Give console a fixed height on mobile */
     }
+
+/* Custom Select Dropdown */
+select {
+    width: 100%;
+    background-color: var(--surface-light); /* 使用浅色模式的表面颜色 */
+    color: var(--text-primary-light); /* 使用浅色模式的主要文本颜色 */
+    border: 1px solid var(--border-light); /* 使用浅色模式的边框颜色 */
+    border-radius: 8px;
+    padding: 0.75rem 2.5rem 0.75rem 1rem;
+    font-size: 1rem;
+    font-family: var(--font-sans); /* 使用项目定义的字体 */
+    -webkit-appearance: none; /* 移除默认外观 */
+    appearance: none; /* 移除默认外观 */
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='%236B7280' viewBox='0 0 16 16'%3E%3Cpath fill-rule='evenodd' d='M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z'/%3E%3C/svg%3E"); /* 默认箭头颜色 */
+    background-repeat: no-repeat;
+    background-position: right 0.75rem center;
+    cursor: pointer;
+    transition: all 0.2s var(--ease-out);
+}
+
+body.dark-mode select {
+    background-color: var(--surface-dark);
+    color: var(--text-primary-dark);
+    border-color: var(--border-dark);
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='%239CA3AF' viewBox='0 0 16 16'%3E%3Cpath fill-rule='evenodd' d='M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z'/%3E%3C/svg%3E"); /* 深色模式箭头颜色 */
+}
+
+select:disabled {
+    background-color: var(--bg-light); /* 禁用状态背景色 */
+    color: var(--text-secondary-light); /* 禁用状态文本颜色 */
+    border-color: var(--border-light);
+    cursor: not-allowed;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='%23E5E7EB' viewBox='0 0 16 16'%3E%3Cpath fill-rule='evenodd' d='M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z'/%3E%3C/svg%3E"); /* 禁用状态箭头颜色 */
+}
+
+body.dark-mode select:disabled {
+    background-color: var(--surface-dark); /* 深色模式禁用状态背景色 */
+    color: var(--text-secondary-dark); /* 深色模式禁用状态文本颜色 */
+    border-color: var(--border-dark);
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='%23374151' viewBox='0 0 16 16'%3E%3Cpath fill-rule='evenodd' d='M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z'/%3E%3C/svg%3E"); /* 深色模式禁用状态箭头颜色 */
+}
 }
