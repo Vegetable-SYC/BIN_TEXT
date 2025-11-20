@@ -1,0 +1,69 @@
+{
+  "devices": [
+    {
+      "id": "FNK0102A",
+      "name": "FNK0102A",
+      "image": "firmware/FNK0102A/FNK0102A.png",
+      "firmwares": [
+        {
+          "id": "Xiaozhi-1.4inch",
+          "name": "Xiaozhi-1.4inch",
+          "versions": [
+            {
+              "id": "v1.0",
+              "name": "v1.0",
+              "manifest_path": "firmware/FNK0102A/firmwares/v1.0/v1.0.json"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "FNK0102H",
+      "name": "FNK0102H",
+      "image": "firmware/FNK0102H/FNK0102H.png",
+      "firmwares": [
+        {
+          "id": "Xiaozhi-3.5inch",
+          "name": "Xiaozhi-3.5inch",
+          "versions": [
+            {
+              "id": "v1.0",
+              "name": "v1.0",
+              "manifest_path": "firmware/FNK0102H/firmwares/v1.0/v1.0.json"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "FNK0103",
+      "name": "FNK0103",
+      "image": "firmware/FNK0103/FNK0103.png",
+      "firmwares": [
+        {
+          "id": "WS2812",
+          "name": "WS2812",
+          "versions": [
+            {
+              "id": "v1.0",
+              "name": "v1.0",
+              "manifest_path": "firmware/FNK0103/WS2812/v1.0/v1.0.0.json"
+            }
+          ]
+        },
+		{
+          "id": "ESP32-2432S028",
+          "name": "ESP32-2432S028",
+          "versions": [
+            {
+              "id": "v1.0",
+              "name": "v1.0",
+              "manifest_path": "firmware/FNK0103/ESP32-2432S028/v1.0/v1.0.0.json"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,99 @@
+<!doctype html>
+<html lang="zh">
+  <head>
+    <meta charset="utf-8" />
+    <title>固件在线下载</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/src/style.css">
+  </head>
+  <body>
+
+    <nav class="top-nav">
+      <div class="nav-content">
+        <div class="logo">Code-bear</div>
+        <div class="theme-switcher" id="theme-switcher" title="切换主题">
+          <svg id="theme-icon-sun" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg>
+          <svg id="theme-icon-moon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>
+        </div>
+      </div>
+    </nav>
+
+    <div class="dashboard-layout">
+      <div class="wizard-column card">
+        <main class="wizard-main">
+          <div class="wizard-container">
+            <section id="project-selection" class="step-section">
+              <h2 class="step-title">选择一个项目</h2>
+              <div id="project-grid" class="selection-grid"></div>
+            </section>
+            <section id="device-selection" class="step-section">
+              <h2 class="step-title">选择您的设备</h2>
+              <div id="device-grid-container"></div>
+            </section>
+            <section id="version-selection" class="step-section">
+              <h2 class="step-title">选择固件版本</h2>
+              <div id="version-buttons" class="version-buttons"></div>
+            </section>
+            <section id="install-section" class="step-section">
+              <h2 class="step-title">安装</h2>
+              <div id="install-button-container">
+                  <button id="custom-install-button" class="install-button">
+                    连接设备
+                  </button>
+              </div>
+            </section>
+          </div>
+        </main>
+      </div>
+
+      <div class="console-column card">
+        <div class="console-tabs">
+          <button class="console-tab active" data-tab="terminal">控制台</button>
+          <button class="console-tab" data-tab="serial">串口监视器</button>
+        </div>
+        <div class="console-content">
+          <div id="terminal-log-container" class="terminal-wrapper tab-pane active" data-tab-content="terminal">
+            <div class="terminal-controls">
+              <button id="clear-console-button" class="control-button">清空</button>
+            </div>
+            <div id="terminal-log" class="terminal"></div>
+          </div>
+          <div id="serial-monitor-container" class="terminal-wrapper tab-pane" data-tab-content="serial">
+            <div class="terminal-controls">
+              <select id="serial-baud-rate">
+                <option value="9600">9600</option>
+                <option value="115200" selected>115200</option>
+                <option value="230400">230400</option>
+                <option value="460800">460800</option>
+                <option value="921600">921600</option>
+              </select>
+              <button id="clear-serial-button" class="control-button">清空</button>
+            </div>
+            <div id="serial-monitor-log" class="terminal"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div id="device-modal" class="modal-overlay">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h3>选择您的设备</h3>
+          <button id="close-modal-btn" class="close-button">&times;</button>
+        </div>
+        <div class="modal-body">
+          <div id="modal-device-grid" class="selection-grid"></div>
+        </div>
+      </div>
+    </div>
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js"></script>
+    <script type="module" src="/src/main.ts"></script>
+  </body>
+</html>
+
+
+
